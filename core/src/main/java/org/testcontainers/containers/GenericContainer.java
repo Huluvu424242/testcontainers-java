@@ -41,7 +41,6 @@ import org.testcontainers.controller.model.ContainerState;
 import org.testcontainers.controller.model.EnvironmentVariable;
 import org.testcontainers.controller.model.HostMount;
 import org.testcontainers.controller.model.MountPoint;
-import org.testcontainers.docker.DockerClientFactory;
 import org.testcontainers.UnstableAPI;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.startupcheck.IsRunningStartupCheckStrategy;
@@ -366,7 +365,7 @@ public class GenericContainer<SELF extends GenericContainer<SELF>>
             CreateContainerIntent createCommand = containerController.createContainerIntent(dockerImageName);
             applyConfiguration(createCommand);
 
-            createCommand.getLabels().put(DockerClientFactory.TESTCONTAINERS_LABEL, "true");
+            createCommand.getLabels().put(ClientFactoryReplacement.TESTCONTAINERS_LABEL, "true");
 
             boolean reused = false;
             final boolean reusable;
@@ -408,7 +407,7 @@ public class GenericContainer<SELF extends GenericContainer<SELF>>
             }
 
             if (!reusable) {
-                createCommand.getLabels().put(DockerClientFactory.TESTCONTAINERS_SESSION_ID_LABEL, DockerClientFactory.SESSION_ID);
+                createCommand.getLabels().put(ClientFactoryReplacement.TESTCONTAINERS_SESSION_ID_LABEL, ClientFactoryReplacement.SESSION_ID);
             }
 
             if (!reused) {
@@ -657,7 +656,7 @@ public class GenericContainer<SELF extends GenericContainer<SELF>>
         PathUtils.mkdirp(directory);
 
         if (temporary)
-            Runtime.getRuntime().addShutdownHook(new Thread(DockerClientFactory.TESTCONTAINERS_THREAD_GROUP, () -> {
+            Runtime.getRuntime().addShutdownHook(new Thread(ClientFactoryReplacement.TESTCONTAINERS_THREAD_GROUP, () -> {
                 PathUtils.recursiveDeleteDir(directory);
             }));
 

@@ -18,14 +18,12 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.testcontainers.ContainerControllerFactory;
 import org.testcontainers.controller.ContainerController;
-import org.testcontainers.docker.DockerClientFactory;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.startupcheck.IndefiniteWaitOneShotStartupCheckStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
-import org.testcontainers.dockerclient.TransportConfig;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.utility.AuditLogger;
 import org.testcontainers.utility.Base58;
@@ -634,7 +632,7 @@ class ContainerisedDockerCompose extends GenericContainer<ContainerisedDockerCom
         //  as the docker daemon, just mapping the docker control socket is OK.
         // As there seems to be a problem with mapping to the /var/run directory in certain environments (e.g. CircleCI)
         //  we map the socket file outside of /var/run, as just /docker.sock
-        addFileSystemBind(DockerClientFactory.instance().getRemoteDockerUnixSocketPath(), "/docker.sock", READ_WRITE);
+        addFileSystemBind(ClientFactoryReplacement.instance().getRemoteDockerUnixSocketPath(), "/docker.sock", READ_WRITE);
         addEnv("DOCKER_HOST", "unix:///docker.sock");
         setStartupCheckStrategy(new IndefiniteWaitOneShotStartupCheckStrategy());
         setWorkingDirectory(containerPwd);
@@ -725,7 +723,7 @@ class LocalDockerCompose implements DockerCompose {
 
         String dockerHost = System.getenv("DOCKER_HOST");
         if (dockerHost == null) {
-            TransportConfig transportConfig = DockerClientFactory.instance().getTransportConfig();
+            TransportConfigReplacement transportConfig = ClientFactoryReplacement.instance().getTransportConfig();
             SSLConfig sslConfig = transportConfig.getSslConfig();
             if (sslConfig != null) {
                 if (sslConfig instanceof LocalDirectorySSLConfig) {

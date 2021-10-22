@@ -8,11 +8,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.testcontainers.ContainerControllerFactory;
+import org.testcontainers.containers.ClientFactoryReplacement;
 import org.testcontainers.controller.ContainerController;
 import org.testcontainers.controller.callbacks.BuildImageResultCallback;
 import org.testcontainers.controller.intents.BuildImageIntent;
 import org.testcontainers.controller.intents.BuildResultItem;
-import org.testcontainers.docker.DockerClientFactory;
 import org.testcontainers.images.ParsedDockerfile;
 import org.testcontainers.images.builder.traits.BuildContextBuilderTrait;
 import org.testcontainers.images.builder.traits.ClasspathTrait;
@@ -110,7 +110,7 @@ public class ImageFromDockerfile extends LazyFuture<String> implements
             if (buildImageCmd.getLabels() != null) {
                 labels.putAll(buildImageCmd.getLabels());
             }
-            labels.putAll(DockerClientFactory.DEFAULT_LABELS);
+            labels.putAll(ClientFactoryReplacement.DEFAULT_LABELS);
             buildImageCmd.withLabels(labels);
 
             prePullDependencyImages(dependencyImageNames);

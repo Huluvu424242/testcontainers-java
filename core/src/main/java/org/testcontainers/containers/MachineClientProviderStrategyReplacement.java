@@ -1,15 +1,14 @@
-package org.testcontainers.dockerclient;
+package org.testcontainers.containers;
 
 import com.github.dockerjava.core.LocalDirectorySSLConfig;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.testcontainers.utility.CommandLine;
-import org.testcontainers.utility.DockerMachineClient;
-
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.testcontainers.utility.CommandLine;
+import org.testcontainers.utility.DockerMachineClient;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -20,12 +19,13 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 @Slf4j
 @Deprecated
-public final class DockerMachineClientProviderStrategy extends DockerClientProviderStrategy {
+public final class MachineClientProviderStrategyReplacement {
 
     @Getter(lazy = true)
-    private final TransportConfig transportConfig = resolveTransportConfig();
+    private final TransportConfigReplacement transportConfig = resolveTransportConfig();
 
-    private TransportConfig resolveTransportConfig() throws InvalidConfigurationException {
+
+    private TransportConfigReplacement resolveTransportConfig() throws InvalidConfigurationException {
         boolean installed = DockerMachineClient.instance().isInstalled();
         checkArgument(installed, "docker-machine executable was not found on PATH (" + Arrays.toString(CommandLine.getSystemPath()) + ")");
 
@@ -41,7 +41,7 @@ public final class DockerMachineClientProviderStrategy extends DockerClientProvi
 
         log.info("Docker daemon URL for docker machine {} is {}", machineName, dockerDaemonUrl);
 
-        return TransportConfig.builder()
+        return TransportConfigReplacement.builder()
             .dockerHost(URI.create(dockerDaemonUrl))
             .sslConfig(
                 new LocalDirectorySSLConfig(
@@ -51,34 +51,17 @@ public final class DockerMachineClientProviderStrategy extends DockerClientProvi
             .build();
     }
 
-    @Override
-    protected boolean isApplicable() {
-        boolean installed = DockerMachineClient.instance().isInstalled();
-        if (!installed) {
-            log.info("docker-machine executable was not found on PATH ({})", Arrays.toString(CommandLine.getSystemPath()));
-            return false;
-        }
 
-        Optional<String> machineNameOptional = DockerMachineClient.instance().getDefaultMachine();
-        if (!machineNameOptional.isPresent()) {
-            log.info("docker-machine is installed but no default machine could be found");
-        }
-
-        return true;
-    }
-
-    @Override
     protected boolean isPersistable() {
         return false;
     }
 
-    @Override
     protected int getPriority() {
-        return EnvironmentAndSystemPropertyClientProviderStrategy.PRIORITY - 100;
+        return ClientProviderStrategyReplacement.PRIORITY - 100;
     }
 
-    @Override
     public String getDescription() {
-        return "docker-machine";
+        return "docker-machine-replacement";
     }
+
 }

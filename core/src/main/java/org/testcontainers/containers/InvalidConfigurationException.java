@@ -1,7 +1,7 @@
-package org.testcontainers.dockerclient;
+package org.testcontainers.containers;
 
 /**
- * Exception to indicate that a {@link DockerClientProviderStrategy} fails.
+ * Exception to indicate that a {@link ClientProviderStrategyReplacement} fails.
  */
 public class InvalidConfigurationException extends RuntimeException {
 

@@ -241,7 +241,7 @@ public class ReusabilityUnitTests {
                 .isNotNull()
                 .satisfies(command -> {
                     assertThat(command.get().getLabels())
-                        .containsKeys(DockerClientFactory.TESTCONTAINERS_SESSION_ID_LABEL);
+                        .containsKeys(ClientFactoryReplacement.TESTCONTAINERS_SESSION_ID_LABEL);
                 });
         }
 

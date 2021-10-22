@@ -1,18 +1,6 @@
 package org.testcontainers.utility;
 
 import com.google.common.base.Charsets;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import org.apache.commons.compress.archivers.tar.TarConstants;
-import org.apache.commons.lang.SystemUtils;
-import org.jetbrains.annotations.NotNull;
-import org.testcontainers.docker.DockerClientFactory;
-import org.testcontainers.UnstableAPI;
-import org.testcontainers.images.builder.Transferable;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +16,17 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.archivers.tar.TarConstants;
+import org.apache.commons.lang.SystemUtils;
+import org.jetbrains.annotations.NotNull;
+import org.testcontainers.UnstableAPI;
+import org.testcontainers.containers.ClientFactoryReplacement;
+import org.testcontainers.images.builder.Transferable;
 
 import static lombok.AccessLevel.PACKAGE;
 import static org.testcontainers.utility.PathUtils.recursiveDeleteDir;
@@ -293,7 +292,7 @@ public class MountableFile implements Transferable {
     }
 
     private void deleteOnExit(final Path path) {
-        Runtime.getRuntime().addShutdownHook(new Thread(DockerClientFactory.TESTCONTAINERS_THREAD_GROUP, () -> recursiveDeleteDir(path)));
+        Runtime.getRuntime().addShutdownHook(new Thread(ClientFactoryReplacement.TESTCONTAINERS_THREAD_GROUP, () -> recursiveDeleteDir(path)));
     }
 
     /**

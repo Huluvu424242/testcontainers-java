@@ -7,7 +7,6 @@ import org.junit.rules.ExternalResource;
 import org.junit.rules.TestRule;
 import org.testcontainers.ContainerControllerFactory;
 import org.testcontainers.controller.intents.CreateNetworkIntent;
-import org.testcontainers.docker.DockerClientFactory;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -86,7 +85,7 @@ public interface Network extends AutoCloseable, TestRule {
 
             Map<String, String> labels = createNetworkCmd.getLabels();
             labels = new HashMap<>(labels != null ? labels : Collections.emptyMap());
-            labels.putAll(DockerClientFactory.DEFAULT_LABELS);
+            labels.putAll(ClientFactoryReplacement.DEFAULT_LABELS);
             createNetworkCmd.withLabels(labels);
 
             return createNetworkCmd.perform().getId();

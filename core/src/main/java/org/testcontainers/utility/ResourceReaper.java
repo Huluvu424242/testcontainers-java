@@ -17,12 +17,12 @@ import org.rnorth.ducttape.ratelimits.RateLimiter;
 import org.rnorth.ducttape.ratelimits.RateLimiterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.ClientFactoryReplacement;
 import org.testcontainers.controller.ContainerController;
 import org.testcontainers.controller.ResourceCleaner;
 import org.testcontainers.controller.intents.InspectContainerResult;
 import org.testcontainers.controller.model.HostMount;
 import org.testcontainers.controller.model.MountPoint;
-import org.testcontainers.docker.DockerClientFactory;
 import org.testcontainers.containers.ContainerState;
 
 import java.io.BufferedReader;
@@ -273,7 +273,7 @@ public final class ResourceReaper implements ResourceCleaner { // TODO: Move fun
         containerController.checkAndPullImage(ryukImage);
 
         List<HostMount> binds = new ArrayList<>();
-        binds.add(new HostMount(DockerClientFactory.instance().getRemoteDockerUnixSocketPath(), new MountPoint("/var/run/docker.sock")));
+        binds.add(new HostMount(ClientFactoryReplacement.instance().getRemoteDockerUnixSocketPath(), new MountPoint("/var/run/docker.sock")));
 
         ExposedPort ryukExposedPort = ExposedPort.tcp(8080);
         String ryukContainerId = containerController.createContainerIntent(ryukImage)
@@ -283,8 +283,8 @@ public final class ResourceReaper implements ResourceCleaner { // TODO: Move fun
                     .withPortBindings(new PortBinding(Ports.Binding.empty(), ryukExposedPort))
             )
             .withExposedPorts(ryukExposedPort)
-            .withName("testcontainers-ryuk-" + DockerClientFactory.SESSION_ID)
-            .withLabels(Collections.singletonMap(DockerClientFactory.TESTCONTAINERS_LABEL, "true"))
+            .withName("testcontainers-ryuk-" + ClientFactoryReplacement.SESSION_ID)
+            .withLabels(Collections.singletonMap(ClientFactoryReplacement.TESTCONTAINERS_LABEL, "true"))
             .withHostMounts(binds)
             .withPrivileged(TestcontainersConfiguration.getInstance().isRyukPrivileged())
             .perform()
@@ -343,7 +343,7 @@ public final class ResourceReaper implements ResourceCleaner { // TODO: Move fun
 
         synchronized (DEATH_NOTE) {
             DEATH_NOTE.add(
-                DockerClientFactory.DEFAULT_LABELS.entrySet().stream()
+                ClientFactoryReplacement.DEFAULT_LABELS.entrySet().stream()
                     .<Map.Entry<String, String>>map(it -> new SimpleEntry<>("label", it.getKey() + "=" + it.getValue()))
                     .collect(Collectors.toList())
             );
@@ -352,7 +352,7 @@ public final class ResourceReaper implements ResourceCleaner { // TODO: Move fun
         String host = containerState.getHost();
         Integer ryukPort = containerState.getFirstMappedPort();
         Thread kiraThread = new Thread(
-            DockerClientFactory.TESTCONTAINERS_THREAD_GROUP,
+            ClientFactoryReplacement.TESTCONTAINERS_THREAD_GROUP,
             () -> {
                 while (true) {
                     RYUK_ACK_RATE_LIMITER.doWhenReady(() -> {
@@ -426,7 +426,7 @@ public final class ResourceReaper implements ResourceCleaner { // TODO: Move fun
     private void setHook() {
         if (hookIsSet.compareAndSet(false, true)) {
             // If the JVM stops without containers being stopped, try and stop the container.
-            Runtime.getRuntime().addShutdownHook(new Thread(DockerClientFactory.TESTCONTAINERS_THREAD_GROUP, this::performCleanup));
+            Runtime.getRuntime().addShutdownHook(new Thread(ClientFactoryReplacement.TESTCONTAINERS_THREAD_GROUP, this::performCleanup));
         }
     }
 

@@ -2,9 +2,6 @@ package org.testcontainers.images;
 
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.model.PullResponseItem;
-import org.slf4j.Logger;
-import org.testcontainers.utility.TestcontainersConfiguration;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.Duration;
@@ -15,8 +12,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.slf4j.Logger;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
-import static org.testcontainers.docker.DockerClientFactory.TESTCONTAINERS_THREAD_GROUP;
+import static org.testcontainers.containers.ClientFactoryReplacement.TESTCONTAINERS_THREAD_GROUP;
+
 
 /**
  * {@link PullImageResultCallback} with improved logging of pull progress and a 'watchdog' which will abort the pull

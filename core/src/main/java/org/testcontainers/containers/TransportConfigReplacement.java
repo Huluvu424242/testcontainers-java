@@ -1,16 +1,15 @@
-package org.testcontainers.dockerclient;
+package org.testcontainers.containers;
+
 
 import com.github.dockerjava.transport.SSLConfig;
+import java.net.URI;
 import lombok.Builder;
 import lombok.Value;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.URI;
-
 @Builder
 @Value
-public class TransportConfig {
-
+public class TransportConfigReplacement {
     URI dockerHost;
 
     @Nullable

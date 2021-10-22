@@ -1,9 +1,9 @@
 package org.testcontainers.utility;
 
 import org.testcontainers.ContainerControllerFactory;
+import org.testcontainers.containers.ClientFactoryReplacement;
+import org.testcontainers.containers.MachineClientProviderStrategyReplacement;
 import org.testcontainers.controller.ContainerProvider;
-import org.testcontainers.docker.DockerClientFactory;
-import org.testcontainers.dockerclient.DockerMachineClientProviderStrategy;
 
 /**
  * Provides utility methods for determining facts about the test environment.
@@ -15,7 +15,7 @@ public class TestEnvironment {
 
     public static boolean dockerApiAtLeast(String minimumVersion) {
         ComparableVersion min = new ComparableVersion(minimumVersion);
-        ComparableVersion current = new ComparableVersion(DockerClientFactory.instance().getActiveApiVersion());
+        ComparableVersion current = new ComparableVersion(ClientFactoryReplacement.instance().getActiveApiVersion());
 
         return current.compareTo(min) >= 0;
     }
@@ -30,7 +30,7 @@ public class TestEnvironment {
     }
 
     public static boolean dockerIsDockerMachine() {
-        return DockerClientFactory.instance().isUsing(DockerMachineClientProviderStrategy.class);
+        return ClientFactoryReplacement.instance().isUsing(MachineClientProviderStrategyReplacement.class);
     }
 }
 
